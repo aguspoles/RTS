@@ -40,9 +40,6 @@ public class PathRequestManager : MonoBehaviour {
 			results.Enqueue (result);
 		}
 	}
-
-
-
 }
 
 public struct PathResult {
