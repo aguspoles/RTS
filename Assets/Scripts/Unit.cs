@@ -6,7 +6,6 @@ public class Unit : MonoBehaviour {
 	const float minPathUpdateTime = .2f;
 	const float pathUpdateMoveThreshold = .5f;
 
-	public Transform target;
     public float speed = 20;
 	public float turnSpeed = 3;
 	public float turnDst = 5;
@@ -14,10 +13,14 @@ public class Unit : MonoBehaviour {
     public bool selected = false;
 
 	Path path;
-    Vector3 velocity;
+    FlockAgent agentComponent;
 
-	public void MoveToPosition(Vector3 velocity, Vector3 target) {
-        this.velocity = velocity;
+	void Start()
+	{
+		agentComponent = GetComponent<FlockAgent>();
+	}
+
+	public void MoveToPosition(Vector3 target) {
 		StartCoroutine (UpdatePath (target));
 	}
 
@@ -60,7 +63,7 @@ public class Unit : MonoBehaviour {
 
 		while (followingPath) {
 			Vector2 pos2D = new Vector2 (transform.position.x, transform.position.z);
-			while (path.turnBoundaries [pathIndex].HasCrossedLine (pos2D)) {
+			while (path.turnBoundaries[pathIndex].HasCrossedLine(pos2D)) {
 				if (pathIndex == path.finishLineIndex) {
 					followingPath = false;
 					break;
@@ -77,19 +80,14 @@ public class Unit : MonoBehaviour {
 						followingPath = false;
 					}
 				}
-
-
-
-				Quaternion targetRotation = Quaternion.LookRotation (path.lookPoints [pathIndex] - transform.position);
+				
+				Vector3 lookRotationDirection = (path.lookPoints [pathIndex] - transform.position + agentComponent.velocity).normalized;
+				Quaternion targetRotation = Quaternion.LookRotation (lookRotationDirection);
 				transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
-				//transform.Translate (Vector3.forward * Time.deltaTime * speed * speedPercent, Space.Self);
-
-                //transform.forward = velocity;
-                transform.position += velocity * Time.deltaTime;
+				transform.Translate (Vector3.forward * Time.deltaTime * speed * speedPercent, Space.Self);
             }
 
 			yield return null;
-
 		}
 	}
 

@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class FlockAgent : MonoBehaviour
 {
+    public Vector3 velocity;
+    Unit pathAgent;
 
     Flock agentFlock;
     public Flock AgentFlock { get { return agentFlock; } }
@@ -16,6 +18,7 @@ public class FlockAgent : MonoBehaviour
     void Start()
     {
         agentCollider = GetComponent<Collider>();
+        pathAgent = GetComponent<Unit>();
     }
 
     public void Initialize(Flock flock)
@@ -23,9 +26,9 @@ public class FlockAgent : MonoBehaviour
         agentFlock = flock;
     }
 
-    public void Move(Vector3 velocity, Vector3 target)
+    public void Move(Vector3 target)
     {
         //Find the path and then move
-        GetComponent<Unit>().MoveToPosition(velocity, target);
+        pathAgent.MoveToPosition(target);
     }
 }

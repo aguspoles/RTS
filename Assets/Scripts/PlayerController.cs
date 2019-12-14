@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //Select units and add them to flock
         if(Input.GetMouseButtonDown(0))
         {
             myUnits = unitSystem.SelectUnits();
@@ -30,14 +31,13 @@ public class PlayerController : MonoBehaviour
             myFlock.SetAgents(agents);
         }
 
-
+        //Move flock
         if(Input.GetMouseButtonDown(1))
         {
             RaycastHit hit;
             if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, walkableMask))
             {
                 myFlock.MoveFlock(hit.point);
-                Debug.Log(hit.point);
             }
         }
     }

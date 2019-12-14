@@ -26,7 +26,8 @@ public class Flock : MonoBehaviour
     float squareAvoidanceRadius;
     public float SquareAvoidanceRadius { get { return squareAvoidanceRadius; } }
 
-    // Start is called before the first frame update
+    public bool movingFlock = false;
+
     void Start()
     {
         squareMaxSpeed = maxSpeed * maxSpeed;
@@ -48,8 +49,7 @@ public class Flock : MonoBehaviour
             agents.Add(newAgent);
         }*/
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         foreach (FlockAgent agent in agents)
@@ -59,10 +59,7 @@ public class Flock : MonoBehaviour
             //FOR DEMO ONLY
             agent.GetComponentInChildren<MeshRenderer>().material.color = Color.Lerp(Color.white, Color.red, context.Count / 6f);
         }
-    }
-
-    public void MoveFlock(Vector3 target)
-    {
+        //Update velocity of each agent
         foreach (FlockAgent agent in agents)
         {
             List<Transform> context = GetNearbyObjects(agent);
@@ -73,7 +70,15 @@ public class Flock : MonoBehaviour
             {
                 velocity = velocity.normalized * maxSpeed;
             }
-            agent.Move(velocity, target);
+            agent.velocity = velocity;
+        }
+    }
+
+    public void MoveFlock(Vector3 target)
+    {
+        foreach (FlockAgent agent in agents)
+        {
+            agent.Move(target);
         }
     }
 
