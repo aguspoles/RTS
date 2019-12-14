@@ -7,15 +7,17 @@ public class Unit : MonoBehaviour {
 	const float pathUpdateMoveThreshold = .5f;
 
 	public Transform target;
-	public float speed = 20;
+    public float speed = 20;
 	public float turnSpeed = 3;
 	public float turnDst = 5;
 	public float stoppingDst = 10;
     public bool selected = false;
 
 	Path path;
+    Vector3 velocity;
 
-	public void MoveToPosition(Vector3 target) {
+	public void MoveToPosition(Vector3 velocity, Vector3 target) {
+        this.velocity = velocity;
 		StartCoroutine (UpdatePath (target));
 	}
 
@@ -40,7 +42,7 @@ public class Unit : MonoBehaviour {
 
 		while (true) {
 			yield return new WaitForSeconds (minPathUpdateTime);
-			print (((target - targetPosOld).sqrMagnitude) + "    " + sqrMoveThreshold);
+			//print (((target - targetPosOld).sqrMagnitude) + "    " + sqrMoveThreshold);
 			if ((target - targetPosOld).sqrMagnitude > sqrMoveThreshold) {
 				PathRequestManager.RequestPath (new PathRequest(transform.position, target, OnPathFound));
 				targetPosOld = target;
@@ -76,10 +78,15 @@ public class Unit : MonoBehaviour {
 					}
 				}
 
+
+
 				Quaternion targetRotation = Quaternion.LookRotation (path.lookPoints [pathIndex] - transform.position);
 				transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
-				transform.Translate (Vector3.forward * Time.deltaTime * speed * speedPercent, Space.Self);
-			}
+				//transform.Translate (Vector3.forward * Time.deltaTime * speed * speedPercent, Space.Self);
+
+                //transform.forward = velocity;
+                transform.position += velocity * Time.deltaTime;
+            }
 
 			yield return null;
 
