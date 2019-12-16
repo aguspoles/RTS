@@ -16,16 +16,19 @@ public class SteeredCohesionBehavior : FlockBehavior
             return Vector3.zero;
 
         //add all points together and average
-        Vector3 cohesionMove = Vector3.zero;
+        Vector2 cohesionMove = Vector2.zero;
         foreach (Transform item in context)
         {
-            cohesionMove += item.position;
+            Vector2 item2D = new Vector2(item.position.x, item.position.z);
+            cohesionMove += item2D;
         }
         cohesionMove /= context.Count;
 
         //create offset from agent position
-        cohesionMove -= agent.transform.position;
-        cohesionMove = Vector3.SmoothDamp(agent.transform.forward, cohesionMove, ref currentVelocity, agentSmoothTime);
-        return cohesionMove;
+        Vector2 this2D = new Vector2(agent.transform.position.x, agent.transform.position.z);
+        cohesionMove -= this2D;
+        Vector3 target = new Vector3(cohesionMove.x, agent.transform.position.y, cohesionMove.y);
+        Vector3 ret = Vector3.SmoothDamp(agent.transform.forward, target, ref currentVelocity, agentSmoothTime);
+        return ret;
     }
 }

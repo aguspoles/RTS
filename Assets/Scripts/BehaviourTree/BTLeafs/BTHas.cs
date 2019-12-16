@@ -11,7 +11,7 @@ public class BTHas : BTNode
         switch (operation)
         {
             case HasOp.PATH:
-                result = context.pathUnit.followingPath ? BTResult.SUCCESS : BTResult.FAILURE;
+                result = (context.pathUnit.followingPath) ? BTResult.SUCCESS : BTResult.FAILURE;
                 break;
             case HasOp.PATH_TO_TARGET:
                 if (!context.pathUnit.followingPath)

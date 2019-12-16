@@ -17,16 +17,19 @@ public class Unit : MonoBehaviour {
     public bool targetReached = false;
 
 	Path path;
-    FlockAgent agentComponent;
+    PathGrid grid;
     public Vector3 target;
     private Vector3 previousTarget;
+    private Vector3 agentVelocity;
+    private FlockAgent agent;
 
     Animator animatorController;
 
     void Start()
 	{
-		agentComponent = GetComponent<FlockAgent>();
         animatorController = GetComponent<Animator>();
+        agent = GetComponent<FlockAgent>();
+        grid = FindObjectOfType<PathGrid>();
         target = InvalidVector3;
     }
 
@@ -37,18 +40,19 @@ public class Unit : MonoBehaviour {
 
     private void HandleAttack()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        /*if (Input.GetKeyDown(KeyCode.Space))
         {
             animatorController.SetTrigger("Attack");
         }
-        else animatorController.ResetTrigger("Attack");
+        else animatorController.ResetTrigger("Attack");*/
     }
 
-    public void MoveToPosition(Vector3 target) {
+    public void MoveToPosition(Vector3 target, Vector3 velocity) {
         if (previousTarget == target)
             return;
         this.previousTarget = target;
         this.target = target;
+        this.agentVelocity = velocity;
         targetReached = false;
         StartCoroutine (UpdatePath (target));
 	}
@@ -104,17 +108,22 @@ public class Unit : MonoBehaviour {
 			if (followingPath) {
 
 				if (pathIndex >= path.slowDownIndex && stoppingDst > 0) {
-					speedPercent = Mathf.Clamp01 (path.turnBoundaries [path.finishLineIndex].DistanceFromPoint (pos2D) / stoppingDst);
+					speedPercent = Mathf.Clamp01 (path.turnBoundaries[path.finishLineIndex].DistanceFromPoint (pos2D) / stoppingDst);
 					if (speedPercent < 0.01f) {
 						followingPath = false;
                         targetReached = true;
                     }
 				}
-				
-				Vector3 lookRotationDirection = (path.lookPoints [pathIndex] - transform.position);
-				Quaternion targetRotation = Quaternion.LookRotation(lookRotationDirection);
-				transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
-				transform.Translate (Vector3.forward * Time.deltaTime * speed * speedPercent, Space.Self);
+
+                PathNode node = grid.NodeFromWorldPoint(transform.position);
+                float penalty = speed;
+                if (node.movementPenalty > 50)
+                    penalty *= 0.5f;
+
+                Vector3 lookRotationDirection = (path.lookPoints[pathIndex] - transform.position);
+                Quaternion targetRotation = Quaternion.LookRotation(lookRotationDirection);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
+                transform.Translate(Vector3.forward * Time.deltaTime * speedPercent * penalty, Space.Self);
             }
 
 			yield return null;

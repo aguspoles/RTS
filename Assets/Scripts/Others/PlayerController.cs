@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private UnitsControlSystem unitSystem;
     private List<Unit> myUnits;
     private Flock myFlock;
     [SerializeField]
-    static private LayerMask walkableMask;
+    private LayerMask walkableMask;
+    [SerializeField]
+    private LayerMask unitsMask;
 
     void Start()
     {
-        unitSystem = GetComponent<UnitsControlSystem>();
         myUnits = new List<Unit>();
-        myFlock = FindObjectOfType<Flock>();
+        myFlock = GetComponent<Flock>();
     }
 
     void Update()
@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
         //Select units and add them to flock
         if(Input.GetMouseButtonDown(0))
         {
-            myUnits = unitSystem.SelectUnits();
+            SelectUnits();
             List<FlockAgent> agents = new List<FlockAgent>();
             foreach (Unit u in myUnits)
             {
@@ -35,10 +35,9 @@ public class PlayerController : MonoBehaviour
         if(Input.GetMouseButtonDown(1))
         {
             RaycastHit hit;
-            if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, walkableMask))
+            if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, walkableMask))
             {
                 myFlock.MoveFlock(hit.point);
-                Debug.Log(hit.point);
             }
         }
     }
@@ -46,5 +45,32 @@ public class PlayerController : MonoBehaviour
     public LayerMask GetWalakableMask()
     {
         return walkableMask;
+    }
+
+    public LayerMask GetUnitsMask()
+    {
+        return unitsMask;
+    }
+
+    public void SelectUnits()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, unitsMask))
+        {
+            Unit unit = hit.collider.GetComponent<Unit>();
+            if (unit)
+            {
+                if (!unit.selected)
+                {
+                    myUnits.Add(unit);
+                    unit.selected = true;
+                }
+                else
+                {
+                    myUnits.Remove(unit);
+                    unit.selected = false;
+                }
+            }
+        }
     }
 }

@@ -28,7 +28,6 @@ public class FlockAgent : MonoBehaviour
         {
             transform.position += velocity * Time.deltaTime;
         }
-        transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 
     public void Initialize(Flock flock)
@@ -39,6 +38,6 @@ public class FlockAgent : MonoBehaviour
     public void Move(Vector3 target)
     {
         //Find the path and then move
-        pathAgent.MoveToPosition(target);
+        pathAgent.MoveToPosition(target, velocity);
     }
 }

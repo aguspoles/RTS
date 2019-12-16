@@ -77,7 +77,7 @@ public class NPCBehavior : MonoBehaviour {
         GameObject mine = MineWithGold();
         if (mine)
         {
-            unit.MoveToPosition(mine.transform.position);
+            unit.MoveToPosition(mine.transform.position, Vector3.zero);
             if(unit.targetReached)
                 m_NPCStateMachine.SetEvent((int)CNPCStateMachine.EEvent.ON_ARRIVE_TO_MINE);
         }
@@ -104,7 +104,7 @@ public class NPCBehavior : MonoBehaviour {
 
     private void ReturnToBase()
     {
-        unit.MoveToPosition(m_home.transform.position);
+        unit.MoveToPosition(m_home.transform.position, Vector3.zero);
         if (unit.targetReached)
         {
             m_NPCStateMachine.SetEvent((int)CNPCStateMachine.EEvent.ON_ARRIVE_TO_HOME);

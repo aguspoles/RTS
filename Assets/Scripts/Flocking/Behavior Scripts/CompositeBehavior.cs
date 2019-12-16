@@ -18,27 +18,28 @@ public class CompositeBehavior : FlockBehavior
         }
 
         //set up move
-        Vector3 move = Vector3.zero;
+        Vector2 move = Vector2.zero;
 
         //iterate through behaviors
         for (int i = 0; i < behaviors.Length; i++)
         {
-            Vector3 partialMove = behaviors[i].CalculateMove(agent, context, flock) * weights[i];
+            Vector3 partialMove = behaviors[i].CalculateMove(agent, context, flock);
+            Vector2 partialMove2D = new Vector2(partialMove.x, partialMove.z) * weights[i];
 
-            if (partialMove != Vector3.zero)
+            if (partialMove2D != Vector2.zero)
             {
-                if (partialMove.sqrMagnitude > weights[i] * weights[i])
+                if (partialMove2D.sqrMagnitude > weights[i] * weights[i])
                 {
-                    partialMove.Normalize();
-                    partialMove *= weights[i];
+                    partialMove2D.Normalize();
+                    partialMove2D *= weights[i];
                 }
 
-                move += partialMove;
+                move += partialMove2D;
 
             }
         }
 
-        return move;
+        return new Vector3(move.x, agent.transform.position.y, move.y);
 
 
     }

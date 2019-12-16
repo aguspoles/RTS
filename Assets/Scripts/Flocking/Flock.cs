@@ -48,7 +48,7 @@ public class Flock : MonoBehaviour
     List<Transform> GetNearbyObjects(FlockAgent agent)
     {
         List<Transform> context = new List<Transform>();
-        Collider[] contextColliders = Physics.OverlapSphere(agent.transform.position, neighborRadius);
+        Collider[] contextColliders = Physics.OverlapSphere(agent.transform.position, neighborRadius, FindObjectOfType<PlayerController>().GetUnitsMask());
         foreach (Collider c in contextColliders)
         {
             if (c != agent.AgentCollider)
@@ -92,4 +92,14 @@ public class Flock : MonoBehaviour
         }
     }
 
+    public Vector3 CenterOfFlock()
+    {
+        Vector3 center = new Vector3();
+        foreach(FlockAgent agent in agents)
+        {
+            center += agent.transform.position;
+        }
+        center /= agents.Count;
+        return center;
+    }
 }

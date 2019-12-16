@@ -12,19 +12,21 @@ public class AvoidanceBehavior : FlockBehavior
             return Vector3.zero;
 
         //add all points together and average
-        Vector3 avoidanceMove = Vector3.zero;
+        Vector2 avoidanceMove = Vector2.zero;
         int nAvoid = 0;
         foreach (Transform item in context)
         {
-            if (Vector3.SqrMagnitude(item.position - agent.transform.position) < flock.SquareAvoidanceRadius)
+            Vector2 item2D = new Vector2(item.position.x, item.position.z);
+            Vector2 this2D = new Vector2(agent.transform.position.x, agent.transform.position.z);
+            if (Vector2.SqrMagnitude(item2D - this2D) < flock.SquareAvoidanceRadius)
             {
                 nAvoid++;
-                avoidanceMove += (agent.transform.position - item.position);
+                avoidanceMove += (this2D - item2D);
             }
         }
         if (nAvoid > 0)
             avoidanceMove /= nAvoid;
 
-        return avoidanceMove;
+        return new Vector3(avoidanceMove.x, agent.transform.position.y, avoidanceMove.y);
     }
 }
