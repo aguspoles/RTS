@@ -6,7 +6,8 @@ using UnityEngine;
 public class FlockAgent : MonoBehaviour
 {
     public Vector3 velocity;
-    Unit pathAgent;
+    public Unit pathAgent;
+    public float gravity = 10;
 
     Flock agentFlock;
     public Flock AgentFlock { get { return agentFlock; } }
@@ -19,6 +20,15 @@ public class FlockAgent : MonoBehaviour
     {
         agentCollider = GetComponent<Collider>();
         pathAgent = GetComponent<Unit>();
+    }
+
+    void Update()
+    {
+        if(pathAgent.followingPath)
+        {
+            transform.position += velocity * Time.deltaTime;
+        }
+        transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
     }
 
     public void Initialize(Flock flock)

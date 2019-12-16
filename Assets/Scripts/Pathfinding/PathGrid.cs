@@ -13,7 +13,7 @@ public class PathGrid : MonoBehaviour {
 	Dictionary<int,int> walkableRegionsDictionary = new Dictionary<int, int>();
 	LayerMask walkableMask;
 
-	Node[,] grid;
+	PathNode[,] grid;
 
 	float nodeDiameter;
 	int gridSizeX, gridSizeY;
@@ -41,7 +41,7 @@ public class PathGrid : MonoBehaviour {
 	}
 
 	void CreateGrid() {
-		grid = new Node[gridSizeX,gridSizeY];
+		grid = new PathNode[gridSizeX,gridSizeY];
 		Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x/2 - Vector3.forward * gridWorldSize.y/2;
 
 		for (int x = 0; x < gridSizeX; x ++) {
@@ -52,7 +52,7 @@ public class PathGrid : MonoBehaviour {
 				int movementPenalty = 0;
 
 
-				Ray ray = new Ray(worldPoint + Vector3.up * 50, Vector3.down);
+				Ray ray = new Ray(worldPoint - Vector3.up * 50, Vector3.up);
 				RaycastHit hit;
 				if (Physics.Raycast(ray, out hit, 100, walkableMask)) {
 					walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
@@ -63,7 +63,7 @@ public class PathGrid : MonoBehaviour {
 				}
 
 
-				grid[x,y] = new Node(walkable,worldPoint, x,y, movementPenalty);
+				grid[x,y] = new PathNode(walkable,worldPoint, x,y, movementPenalty);
 			}
 		}
 
@@ -120,8 +120,8 @@ public class PathGrid : MonoBehaviour {
 
 	}
 
-	public List<Node> GetNeighbours(Node node) {
-		List<Node> neighbours = new List<Node>();
+	public List<PathNode> GetNeighbours(PathNode node) {
+		List<PathNode> neighbours = new List<PathNode>();
 
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
@@ -141,7 +141,7 @@ public class PathGrid : MonoBehaviour {
 	}
 
 
-	public Node NodeFromWorldPoint(Vector3 worldPosition) {
+	public PathNode NodeFromWorldPoint(Vector3 worldPosition) {
 		float percentX = (worldPosition.x + gridWorldSize.x/2) / gridWorldSize.x;
 		float percentY = (worldPosition.z + gridWorldSize.y/2) / gridWorldSize.y;
 		percentX = Mathf.Clamp01(percentX);
@@ -155,8 +155,7 @@ public class PathGrid : MonoBehaviour {
 	void OnDrawGizmos() {
 		Gizmos.DrawWireCube(transform.position,new Vector3(gridWorldSize.x,1,gridWorldSize.y));
 		if (grid != null && displayGridGizmos) {
-			foreach (Node n in grid) {
-
+			foreach (PathNode n in grid) {
 				Gizmos.color = Color.Lerp (Color.white, Color.black, Mathf.InverseLerp (penaltyMin, penaltyMax, n.movementPenalty));
 				Gizmos.color = (n.walkable)?Gizmos.color:Color.red;
 				Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter));

@@ -21,18 +21,18 @@ public class Pathfinding : MonoBehaviour {
 		Vector3[] waypoints = new Vector3[0];
 		bool pathSuccess = false;
 		
-		Node startNode = grid.NodeFromWorldPoint(request.pathStart);
-		Node targetNode = grid.NodeFromWorldPoint(request.pathEnd);
+		PathNode startNode = grid.NodeFromWorldPoint(request.pathStart);
+		PathNode targetNode = grid.NodeFromWorldPoint(request.pathEnd);
 		startNode.parent = startNode;
 		
 		
 		if (startNode.walkable && targetNode.walkable) {
-			Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
-			HashSet<Node> closedSet = new HashSet<Node>();
+			Heap<PathNode> openSet = new Heap<PathNode>(grid.MaxSize);
+			HashSet<PathNode> closedSet = new HashSet<PathNode>();
 			openSet.Add(startNode);
 			
 			while (openSet.Count > 0) {
-				Node currentNode = openSet.RemoveFirst();
+				PathNode currentNode = openSet.RemoveFirst();
 				closedSet.Add(currentNode);
 				
 				if (currentNode == targetNode) {
@@ -42,7 +42,7 @@ public class Pathfinding : MonoBehaviour {
 					break;
 				}
 				
-				foreach (Node neighbour in grid.GetNeighbours(currentNode)) {
+				foreach (PathNode neighbour in grid.GetNeighbours(currentNode)) {
 					if (!neighbour.walkable || closedSet.Contains(neighbour)) {
 						continue;
 					}
@@ -70,9 +70,9 @@ public class Pathfinding : MonoBehaviour {
 	}
 		
 	
-	Vector3[] RetracePath(Node startNode, Node endNode) {
-		List<Node> path = new List<Node>();
-		Node currentNode = endNode;
+	Vector3[] RetracePath(PathNode startNode, PathNode endNode) {
+		List<PathNode> path = new List<PathNode>();
+		PathNode currentNode = endNode;
 		
 		while (currentNode != startNode) {
 			path.Add(currentNode);
@@ -84,7 +84,7 @@ public class Pathfinding : MonoBehaviour {
 		
 	}
 	
-	Vector3[] SimplifyPath(List<Node> path) {
+	Vector3[] SimplifyPath(List<PathNode> path) {
 		List<Vector3> waypoints = new List<Vector3>();
 		Vector2 directionOld = Vector2.zero;
 		
@@ -98,7 +98,7 @@ public class Pathfinding : MonoBehaviour {
 		return waypoints.ToArray();
 	}
 	
-	int GetDistance(Node nodeA, Node nodeB) {
+	int GetDistance(PathNode nodeA, PathNode nodeB) {
 		int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
 		int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 		

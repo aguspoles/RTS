@@ -1,27 +1,56 @@
 ﻿using UnityEngine;
 using System.Collections;
+using PathFinding;
 
 public class Unit : MonoBehaviour {
 
 	const float minPathUpdateTime = .2f;
 	const float pathUpdateMoveThreshold = .5f;
+    public static Vector3 InvalidVector3 = new Vector3(Mathf.Infinity, Mathf.Infinity, Mathf.Infinity);
 
     public float speed = 20;
-	public float turnSpeed = 3;
+    public float turnSpeed = 3;
 	public float turnDst = 5;
 	public float stoppingDst = 10;
     public bool selected = false;
+    public bool followingPath = false;
+    public bool targetReached = false;
 
 	Path path;
     FlockAgent agentComponent;
+    public Vector3 target;
+    private Vector3 previousTarget;
 
-	void Start()
+    Animator animatorController;
+
+    void Start()
 	{
 		agentComponent = GetComponent<FlockAgent>();
-	}
+        animatorController = GetComponent<Animator>();
+        target = InvalidVector3;
+    }
 
-	public void MoveToPosition(Vector3 target) {
-		StartCoroutine (UpdatePath (target));
+    void Update()
+    {
+        HandleAttack();
+    }
+
+    private void HandleAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            animatorController.SetTrigger("Attack");
+        }
+        else animatorController.ResetTrigger("Attack");
+    }
+
+    public void MoveToPosition(Vector3 target) {
+        if (previousTarget == target)
+            return;
+        this.previousTarget = target;
+        this.target = target;
+        targetReached = false;
+        StartCoroutine (UpdatePath (target));
 	}
 
 	public void OnPathFound(Vector3[] waypoints, bool pathSuccessful) {
@@ -54,8 +83,8 @@ public class Unit : MonoBehaviour {
 	}
 
 	IEnumerator FollowPath() {
-
-		bool followingPath = true;
+        followingPath = true;
+        targetReached = false;
 		int pathIndex = 0;
 		transform.LookAt (path.lookPoints [0]);
 
@@ -78,22 +107,29 @@ public class Unit : MonoBehaviour {
 					speedPercent = Mathf.Clamp01 (path.turnBoundaries [path.finishLineIndex].DistanceFromPoint (pos2D) / stoppingDst);
 					if (speedPercent < 0.01f) {
 						followingPath = false;
-					}
+                        targetReached = true;
+                    }
 				}
 				
-				Vector3 lookRotationDirection = (path.lookPoints [pathIndex] - transform.position + agentComponent.velocity).normalized;
-				Quaternion targetRotation = Quaternion.LookRotation (lookRotationDirection);
-				transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
+				Vector3 lookRotationDirection = (path.lookPoints [pathIndex] - transform.position);
+				Quaternion targetRotation = Quaternion.LookRotation(lookRotationDirection);
+				transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
 				transform.Translate (Vector3.forward * Time.deltaTime * speed * speedPercent, Space.Self);
             }
 
 			yield return null;
 		}
-	}
+        target = InvalidVector3;
+    }
 
 	public void OnDrawGizmos() {
 		if (path != null) {
 			path.DrawWithGizmos ();
 		}
 	}
+
+    public void ResetPath()
+    {
+
+    }
 }
