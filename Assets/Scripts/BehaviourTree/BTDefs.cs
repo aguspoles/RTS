@@ -48,6 +48,7 @@ public enum IsOp
 {
     IDLE,
     HOSTILE,
+    WANDERING,
 }
 
 public enum PathType

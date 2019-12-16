@@ -9,15 +9,18 @@ public class AIComponent : MonoBehaviour
     public AIState currentState;
 
     public Unit pathUnit;
+    public AIComponentType type;
     Animator animatorController;
+    PlayerController playerController;
     BTContext aiContext;
 
     private void Awake()
     {
         pathUnit = GetComponent<Unit>();
         animatorController = GetComponent<Animator>();
+        playerController = FindObjectOfType<PlayerController>();
 
-        aiContext = new BTContext(this, animatorController, pathUnit);
+        aiContext = new BTContext(this, animatorController, pathUnit, playerController);
     }
 
     private void Start()
@@ -32,4 +35,10 @@ public class AIComponent : MonoBehaviour
         else
             currentState = AIState.IDLE;
     }
+}
+
+public enum AIComponentType
+{
+    PLAYERUNIT,
+    WANDERER,
 }

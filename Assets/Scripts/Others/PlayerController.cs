@@ -28,14 +28,15 @@ public class PlayerController : MonoBehaviour
             {
                 agents.Add(u.GetComponent<FlockAgent>());
             }
-            myFlock.SetAgents(agents);
+            if(myFlock)
+                myFlock.SetAgents(agents);
         }
 
         //Move flock
         if(Input.GetMouseButtonDown(1))
         {
             RaycastHit hit;
-            if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, walkableMask))
+            if(myFlock && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, walkableMask))
             {
                 myFlock.MoveFlock(hit.point);
             }

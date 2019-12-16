@@ -9,17 +9,16 @@ public class BTFindPath : BTNode
 
     public override BTResult Execute()
     {
-        Unit unit = context.contextOwner.pathUnit;
         switch (pathType)
         {
             case PathType.TARGET:
                 break;
             case PathType.RANDOM:
-                /*Vector3 randomPosition = Random.insideUnitSphere * 10;
-                if (Physics.Raycast(randomPosition, Vector3.up, 100, PlayerController.GetInstance().GetWalakableMask()))
+                Vector3 randomPosition = Random.insideUnitSphere * Random.Range(minWanderDistance, maxWanderDistance);
+                if (Physics.Raycast(randomPosition, -Vector3.up, 100, context.playerController.GetWalakableMask()))
                 {
-                    unit.MoveToPosition(randomPosition);
-                }*/
+                    context.pathUnit.MoveToPosition(randomPosition, Vector3.zero);
+                }
                 break;
             default:
                 break;

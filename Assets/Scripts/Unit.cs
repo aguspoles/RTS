@@ -90,7 +90,7 @@ public class Unit : MonoBehaviour {
         followingPath = true;
         targetReached = false;
 		int pathIndex = 0;
-		transform.LookAt (path.lookPoints [0]);
+		transform.LookAt (path.lookPoints[0]);
 
 		float speedPercent = 1;
 

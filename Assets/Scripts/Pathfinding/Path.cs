@@ -46,7 +46,7 @@ namespace PathFinding
 
         public void DrawWithGizmos()
         {
-            Gizmos.color = Color.black;
+            /*Gizmos.color = Color.black;
             foreach (Vector3 p in lookPoints)
             {
                 Gizmos.DrawCube(p + Vector3.up, Vector3.one);
@@ -56,7 +56,7 @@ namespace PathFinding
             foreach (Line l in turnBoundaries)
             {
                 l.DrawWithGizmos(10);
-            }
+            }*/
 
         }
 
